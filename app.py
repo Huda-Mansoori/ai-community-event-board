@@ -1,22 +1,18 @@
 from flask import Flask
-from pymongo import MongoClient
+from config import Config
+from controllers.event_controller import event_bp
+
 
 app = Flask(__name__)
+app.config.from_object(Config)
 
-# 🔥 Replace with YOUR connection string
-client = MongoClient("mongodb+srv://60304645:12class34@web2.0wcr6lw.mongodb.net/?appName=web2")
+app.register_blueprint(event_bp)
 
-db = client["event_db"]
-collection = db["events"]
 
 @app.route("/")
-def home():
-    return "App is running"
+def health_check():
+    return {"status": "ok", "message": "AI Community Event Board API is running"}
 
-@app.route("/test-db")
-def test_db():
-    collection.insert_one({"msg": "connected"})
-    return "MongoDB connected successfully!"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=app.config["DEBUG"])
