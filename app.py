@@ -1,9 +1,12 @@
 from flask import Flask
 from config import Config
+from controllers.event_controller import event_bp
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+app.register_blueprint(event_bp)
 
 
 @app.route("/")
