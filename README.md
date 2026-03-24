@@ -1,5 +1,10 @@
 # AI-Powered Community Event Board
 
+## Team Members
+Huda Mansoori - 60304645
+Lolwa Al-Hemaidi - 60105155
+Abdulla Twair - 60307682
+
 ## Project Proposal
 
 Our team proposes to develop an AI-Powered Community Event Board, a web
