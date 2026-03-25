@@ -10,6 +10,7 @@ def get_all_events():
     events = event_service.get_all_events()
     
     return jsonify({
+        "team": "AI Community Event Board - Huda 60304645",
         "events": events
     })
 
