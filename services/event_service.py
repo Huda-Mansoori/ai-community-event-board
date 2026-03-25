@@ -2,13 +2,11 @@ from models import event_model
 
 
 def create_event(event_data):
-    """Validate and create a new event."""
-    pass
+    return event_model.create_event(event_data)
 
 
 def get_all_events():
-    """Retrieve and return all events."""
-    pass
+    return event_model.get_all_events()
 
 
 def get_event_by_id(event_id):

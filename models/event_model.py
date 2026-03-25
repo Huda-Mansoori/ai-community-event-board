@@ -8,13 +8,27 @@ events_collection = db["events"]
 
 
 def create_event(event_data):
-    """Insert a new event into the database."""
-    pass
+    event = {
+        "title": event_data.get("title"),
+        "description": event_data.get("description"),
+        "date": event_data.get("date"),
+        "location": event_data.get("location"),
+        "category": event_data.get("category")
+    }
+    
+    result = events_collection.insert_one(event)
+    event["_id"] = str(result.inserted_id)
+    
+    return event
 
 
 def get_all_events():
-    """Retrieve all events from the database."""
-    pass
+    events = list(events_collection.find())
+    
+    for event in events:
+        event["_id"] = str(event["_id"])
+    
+    return events
 
 
 def get_event_by_id(event_id):

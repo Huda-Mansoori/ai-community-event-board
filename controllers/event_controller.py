@@ -7,8 +7,11 @@ event_bp = Blueprint("events", __name__, url_prefix="/events")
 
 @event_bp.route("/", methods=["GET"])
 def get_all_events():
-    """Return a list of all events."""
-    pass
+    events = event_service.get_all_events()
+    
+    return jsonify({
+        "events": events
+    })
 
 
 @event_bp.route("/<event_id>", methods=["GET"])
@@ -19,8 +22,13 @@ def get_event(event_id):
 
 @event_bp.route("/", methods=["POST"])
 def create_event():
-    """Create a new event from request body."""
-    pass
+    data = request.json
+    event = event_service.create_event(data)
+    
+    return jsonify({
+        "message": "Event created successfully",
+        "event": event
+    }), 201
 
 
 @event_bp.route("/<event_id>", methods=["PUT"])
