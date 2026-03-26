@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from config import Config
-
+from bson import ObjectId
 
 client = MongoClient(Config.MONGO_URI)
 db = client["event_db"]
@@ -32,20 +32,33 @@ def get_all_events():
 
 
 def get_event_by_id(event_id):
-    """Retrieve a single event by its ID."""
-    pass
+    event = events_collection.find_one({"_id": ObjectId(event_id)})
+    
+    if event:
+        event["_id"] = str(event["_id"])
+    
+    return event
 
 
 def update_event(event_id, updated_data):
-    """Update an existing event by its ID."""
-    pass
+    events_collection.update_one(
+        {"_id": ObjectId(event_id)},
+        {"$set": updated_data}
+    )
+    
+    return get_event_by_id(event_id)
 
 
 def delete_event(event_id):
-    """Delete an event by its ID."""
-    pass
+    result = events_collection.delete_one({"_id": ObjectId(event_id)})
+    
+    return result.deleted_count > 0
 
 
 def get_events_by_category(category):
-    """Retrieve events filtered by category."""
-    pass
+    events = list(events_collection.find({"category": category}))
+    
+    for event in events:
+        event["_id"] = str(event["_id"])
+    
+    return events

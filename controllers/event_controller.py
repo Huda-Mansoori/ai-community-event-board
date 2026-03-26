@@ -17,8 +17,12 @@ def get_all_events():
 
 @event_bp.route("/<event_id>", methods=["GET"])
 def get_event(event_id):
-    """Return a single event by ID."""
-    pass
+    event = event_service.get_event_by_id(event_id)
+    
+    if not event:
+        return jsonify({"error": "Event not found"}), 404
+    
+    return jsonify(event)
 
 
 @event_bp.route("/", methods=["POST"])
@@ -34,20 +38,32 @@ def create_event():
 
 @event_bp.route("/<event_id>", methods=["PUT"])
 def update_event(event_id):
-    """Update an existing event by ID."""
-    pass
+    data = request.json
+    event = event_service.update_event(event_id, data)
+    
+    return jsonify({
+        "message": "Event updated",
+        "event": event
+    })
 
 
 @event_bp.route("/<event_id>", methods=["DELETE"])
 def delete_event(event_id):
-    """Delete an event by ID."""
-    pass
+    success = event_service.delete_event(event_id)
+
+    if success:
+        return jsonify({"message": "Event deleted"})
+    else:
+        return jsonify({"message": "Event not found"}), 404
 
 
 @event_bp.route("/category/<category>", methods=["GET"])
 def get_events_by_category(category):
-    """Return events filtered by category."""
-    pass
+    events = event_service.get_events_by_category(category)
+    
+    return jsonify({
+        "events": events
+    })
 
 
 @event_bp.route("/generate-description", methods=["POST"])
