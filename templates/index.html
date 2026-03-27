@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Event Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Community Event Board</h1>
+            <p>Discover local events happening near you</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="filter-section">
+            <div class="filter-controls">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search events by title..."
+                    class="search-box"
+                >
+                <select id="categoryFilter" class="filter-dropdown">
+                    <option value="">All Categories</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="sports">Sports</option>
+                    <option value="study">Study Session</option>
+                    <option value="social">Social</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="eventsContainer" class="events-grid">
+            <div class="loading">Loading events...</div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AI Community Event Board. All rights reserved.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+</body>
+</html>
