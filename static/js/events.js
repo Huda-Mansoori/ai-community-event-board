@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="event-footer">
                     <div class="btn-group">
                         <button class="btn btn-view" onclick="viewEvent('${event._id}')">View Details</button>
-                        <button class="btn btn-edit" onclick="editEvent('${event._id}')">Edit</button>
+                        <button class="btn btn-edit" onclick="openEditModal('${event._id}')">Edit</button>
                     </div>
                 </div>
             </div>
@@ -89,15 +89,197 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load events on page load
     loadEvents();
+
+    // Expose loadEvents globally for refresh after create/edit/delete
+    window.reloadEvents = loadEvents;
 });
 
-// Placeholder functions for future implementation
-function viewEvent(eventId) {
-    alert(`View event: ${eventId}`);
-    // TODO: Implement event detail view
+// Modal Management
+function openCreateModal() {
+    document.getElementById('createModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
-function editEvent(eventId) {
-    alert(`Edit event: ${eventId}`);
-    // TODO: Implement event edit modal
+function closeCreateModal() {
+    document.getElementById('createModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('createEventForm').reset();
+}
+
+function closeViewModal() {
+    document.getElementById('viewModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+    document.getElementById('editEventForm').reset();
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+    const createModal = document.getElementById('createModal');
+    const viewModal = document.getElementById('viewModal');
+    const editModal = document.getElementById('editModal');
+
+    if (e.target === createModal) closeCreateModal();
+    if (e.target === viewModal) closeViewModal();
+    if (e.target === editModal) closeEditModal();
+});
+
+// Create Event
+async function submitCreateEvent(event) {
+    event.preventDefault();
+
+    const eventData = {
+        title: document.getElementById('title').value,
+        category: document.getElementById('category').value,
+        date: document.getElementById('date').value,
+        location: document.getElementById('location').value,
+        description: document.getElementById('description').value
+    };
+
+    try {
+        const response = await fetch('/events/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+
+        if (!response.ok) throw new Error('Failed to create event');
+
+        closeCreateModal();
+        window.reloadEvents();
+        alert('Event created successfully!');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to create event. Please try again.');
+    }
+}
+
+// View Event
+async function viewEvent(eventId) {
+    try {
+        const response = await fetch(`/events/${eventId}`);
+        if (!response.ok) throw new Error('Failed to fetch event');
+
+        const event = await response.json();
+        const viewBody = document.getElementById('viewEventBody');
+
+        const dateStr = event.date ? new Date(event.date).toLocaleString() : 'TBA';
+
+        viewBody.innerHTML = `
+            <div class="event-details">
+                <div class="detail-item">
+                    <strong>Category:</strong>
+                    <span class="category-badge">${event.category || 'Uncategorized'}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>📅 Date & Time:</strong>
+                    <span>${dateStr}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>📍 Location:</strong>
+                    <span>${event.location || 'TBA'}</span>
+                </div>
+                <div class="detail-item">
+                    <strong>Description:</strong>
+                    <p>${event.description || 'No description provided'}</p>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+            </div>
+        `;
+
+        document.getElementById('viewEventTitle').textContent = event.title;
+        document.getElementById('viewModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load event details.');
+    }
+}
+
+// Open Edit Modal
+async function openEditModal(eventId) {
+    try {
+        const response = await fetch(`/events/${eventId}`);
+        if (!response.ok) throw new Error('Failed to fetch event');
+
+        const event = await response.json();
+
+        document.getElementById('editEventId').value = eventId;
+        document.getElementById('editTitle').value = event.title;
+        document.getElementById('editCategory').value = event.category || '';
+        document.getElementById('editLocation').value = event.location || '';
+        document.getElementById('editDescription').value = event.description || '';
+
+        // Format date for datetime-local input
+        if (event.date) {
+            const date = new Date(event.date);
+            const iso = date.toISOString().slice(0, 16);
+            document.getElementById('editDate').value = iso;
+        }
+
+        document.getElementById('editModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load event for editing.');
+    }
+}
+
+// Submit Edit Event
+async function submitEditEvent(event) {
+    event.preventDefault();
+
+    const eventId = document.getElementById('editEventId').value;
+    const eventData = {
+        title: document.getElementById('editTitle').value,
+        category: document.getElementById('editCategory').value,
+        date: document.getElementById('editDate').value,
+        location: document.getElementById('editLocation').value,
+        description: document.getElementById('editDescription').value
+    };
+
+    try {
+        const response = await fetch(`/events/${eventId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eventData)
+        });
+
+        if (!response.ok) throw new Error('Failed to update event');
+
+        closeEditModal();
+        window.reloadEvents();
+        alert('Event updated successfully!');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to update event. Please try again.');
+    }
+}
+
+// Delete Event
+async function deleteEvent() {
+    if (!confirm('Are you sure you want to delete this event?')) return;
+
+    const eventId = document.getElementById('editEventId').value;
+
+    try {
+        const response = await fetch(`/events/${eventId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Failed to delete event');
+
+        closeEditModal();
+        window.reloadEvents();
+        alert('Event deleted successfully!');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to delete event. Please try again.');
+    }
 }

@@ -9,8 +9,13 @@
 <body>
     <header>
         <div class="container">
-            <h1>Community Event Board</h1>
-            <p>Discover local events happening near you</p>
+            <div class="header-top">
+                <div>
+                    <h1>Community Event Board</h1>
+                    <p>Discover local events happening near you</p>
+                </div>
+                <button class="btn-create-event" onclick="openCreateModal()">+ Create Event</button>
+            </div>
         </div>
     </header>
 
@@ -42,6 +47,107 @@
     <footer>
         <p>&copy; 2026 AI Community Event Board. All rights reserved.</p>
     </footer>
+
+    <!-- Create Event Modal -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Event</h2>
+                <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <form id="createEventForm" onsubmit="submitCreateEvent(event)">
+                <div class="form-group">
+                    <label for="title">Event Title *</label>
+                    <input type="text" id="title" required placeholder="Enter event title">
+                </div>
+                <div class="form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" required>
+                        <option value="">Select a category</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="sports">Sports</option>
+                        <option value="study">Study Session</option>
+                        <option value="social">Social</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date & Time *</label>
+                    <input type="datetime-local" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" required placeholder="Enter event location">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="4" placeholder="Enter event description"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Event Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="viewEventTitle">Event Details</h2>
+                <button class="modal-close" onclick="closeViewModal()">&times;</button>
+            </div>
+            <div id="viewEventBody" class="modal-body">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Event</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editEventForm" onsubmit="submitEditEvent(event)">
+                <input type="hidden" id="editEventId">
+                <div class="form-group">
+                    <label for="editTitle">Event Title *</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCategory">Category *</label>
+                    <select id="editCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="sports">Sports</option>
+                        <option value="study">Study Session</option>
+                        <option value="social">Social</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editDate">Date & Time *</label>
+                    <input type="datetime-local" id="editDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLocation">Location *</label>
+                    <input type="text" id="editLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <textarea id="editDescription" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteEvent()">Delete</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="{{ url_for('static', filename='js/events.js') }}"></script>
 </body>
