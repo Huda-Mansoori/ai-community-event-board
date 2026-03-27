@@ -29,31 +29,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         eventsContainer.innerHTML = events.map(event => `
-            <div class="event-card">
-                <div class="event-header">
-                    <span class="event-category">${event.category || 'Uncategorized'}</span>
-                    <h3>${event.title}</h3>
+            <article class="event-card window">
+                <div class="title-bar">
+                    <button aria-label="Close" disabled class="close hidden"></button>
+                    <h3 class="title">${event.title}</h3>
+                    <button aria-label="Resize" disabled class="resize hidden"></button>
                 </div>
-                <div class="event-body">
+                <div class="separator"></div>
+                <div class="window-pane event-body">
+                    <p><strong>Category:</strong> <span class="event-category">${event.category || 'Uncategorized'}</span></p>
                     <div class="event-meta">
                         <div class="event-meta-item">
-                            <strong>📅 Date:</strong>
+                            <strong>Date:</strong>
                             ${formatDate(event.date)}
                         </div>
                         <div class="event-meta-item">
-                            <strong>📍 Location:</strong>
+                            <strong>Location:</strong>
                             ${event.location || 'TBA'}
                         </div>
                     </div>
                     <p class="event-description">${event.description || 'No description provided'}</p>
-                </div>
-                <div class="event-footer">
                     <div class="btn-group">
-                        <button class="btn btn-view" onclick="viewEvent('${event._id}')">View Details</button>
-                        <button class="btn btn-edit" onclick="openEditModal('${event._id}')">Edit</button>
+                        <button class="btn" onclick="viewEvent('${event._id}')">View Details</button>
+                        <button class="btn" onclick="openEditModal('${event._id}')">Edit</button>
                     </div>
                 </div>
-            </div>
+            </article>
         `).join('');
     }
 
@@ -176,11 +177,11 @@ async function viewEvent(eventId) {
                     <span class="category-badge">${event.category || 'Uncategorized'}</span>
                 </div>
                 <div class="detail-item">
-                    <strong>📅 Date & Time:</strong>
+                    <strong>Date & Time:</strong>
                     <span>${dateStr}</span>
                 </div>
                 <div class="detail-item">
-                    <strong>📍 Location:</strong>
+                    <strong>Location:</strong>
                     <span>${event.location || 'TBA'}</span>
                 </div>
                 <div class="detail-item">
@@ -189,7 +190,7 @@ async function viewEvent(eventId) {
                 </div>
             </div>
             <div class="form-actions">
-                <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+                <button class="btn" onclick="closeViewModal()">Close</button>
             </div>
         `;
 
