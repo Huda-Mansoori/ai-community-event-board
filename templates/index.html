@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Event Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="container">
+        <div class="window header-window">
+            <div class="title-bar">
+                <button aria-label="Close" disabled class="close hidden"></button>
+                <h1 class="title">Community Event Board</h1>
+                <button aria-label="Resize" disabled class="resize hidden"></button>
+            </div>
+            <div class="separator"></div>
+            <div class="window-pane header-pane">
+                <p>Discover local events happening near you</p>
+                <button class="btn btn-create-event" onclick="openCreateModal()">Create Event</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="filter-section window">
+            <div class="title-bar">
+                <button aria-label="Close" disabled class="close hidden"></button>
+                <h2 class="title">Find Events</h2>
+                <button aria-label="Resize" disabled class="resize hidden"></button>
+            </div>
+            <div class="separator"></div>
+            <div class="window-pane">
+                <div class="filter-controls">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search events by title..."
+                        class="search-box"
+                    >
+                    <select id="categoryFilter" class="filter-dropdown">
+                        <option value="">All Categories</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="sports">Sports</option>
+                        <option value="study">Study Session</option>
+                        <option value="social">Social</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section id="eventsContainer" class="events-grid">
+            <div class="loading">Loading events...</div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AI Community Event Board. All rights reserved.</p>
+    </footer>
+
+    <!-- Create Event Modal -->
+    <div id="createModal" class="modal">
+        <div class="modal-content window">
+            <div class="title-bar">
+                <button aria-label="Close" class="close" onclick="closeCreateModal()"></button>
+                <h2 class="title">Create New Event</h2>
+                <button aria-label="Resize" disabled class="resize hidden"></button>
+            </div>
+            <div class="separator"></div>
+            <div class="window-pane">
+                <form id="createEventForm" onsubmit="submitCreateEvent(event)">
+                    <div class="form-group">
+                        <label for="title">Event Title *</label>
+                        <input type="text" id="title" required placeholder="Enter event title">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" required>
+                            <option value="">Select a category</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="sports">Sports</option>
+                            <option value="study">Study Session</option>
+                            <option value="social">Social</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date &amp; Time *</label>
+                        <input type="datetime-local" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location *</label>
+                        <input type="text" id="location" required placeholder="Enter event location">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" rows="4" placeholder="Enter event description"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn" onclick="closeCreateModal()">Cancel</button>
+                        <button type="submit" class="btn">Create Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Event Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content modal-lg window">
+            <div class="title-bar">
+                <button aria-label="Close" class="close" onclick="closeViewModal()"></button>
+                <h2 id="viewEventTitle" class="title">Event Details</h2>
+                <button aria-label="Resize" disabled class="resize hidden"></button>
+            </div>
+            <div class="separator"></div>
+            <div class="window-pane">
+                <div id="viewEventBody" class="modal-body">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content window">
+            <div class="title-bar">
+                <button aria-label="Close" class="close" onclick="closeEditModal()"></button>
+                <h2 class="title">Edit Event</h2>
+                <button aria-label="Resize" disabled class="resize hidden"></button>
+            </div>
+            <div class="separator"></div>
+            <div class="window-pane">
+                <form id="editEventForm" onsubmit="submitEditEvent(event)">
+                    <input type="hidden" id="editEventId">
+                    <div class="form-group">
+                        <label for="editTitle">Event Title *</label>
+                        <input type="text" id="editTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCategory">Category *</label>
+                        <select id="editCategory" required>
+                            <option value="">Select a category</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="sports">Sports</option>
+                            <option value="study">Study Session</option>
+                            <option value="social">Social</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDate">Date &amp; Time *</label>
+                        <input type="datetime-local" id="editDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLocation">Location *</label>
+                        <input type="text" id="editLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Description</label>
+                        <textarea id="editDescription" rows="4"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn" onclick="closeEditModal()">Cancel</button>
+                        <button type="button" class="btn" onclick="deleteEvent()">Delete</button>
+                        <button type="submit" class="btn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+</body>
+</html>
