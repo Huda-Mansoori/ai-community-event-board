@@ -105,6 +105,7 @@ function closeCreateModal() {
     document.getElementById('createModal').classList.remove('active');
     document.body.style.overflow = 'auto';
     document.getElementById('createEventForm').reset();
+    updateAIStatus('createAIGenStatus', '');
 }
 
 function closeViewModal() {
@@ -116,6 +117,83 @@ function closeEditModal() {
     document.getElementById('editModal').classList.remove('active');
     document.body.style.overflow = 'auto';
     document.getElementById('editEventForm').reset();
+    updateAIStatus('editAIGenStatus', '');
+}
+
+function updateAIStatus(elementId, message, isError = false) {
+    const status = document.getElementById(elementId);
+    if (!status) return;
+
+    status.textContent = message;
+    status.classList.toggle('error', Boolean(isError));
+}
+
+async function requestGeneratedDescription({ title, category, location }) {
+    const response = await fetch('/events/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, category, location })
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok) {
+        throw new Error(payload.error || 'Failed to generate description');
+    }
+
+    return payload.description;
+}
+
+async function generateCreateDescription() {
+    const title = document.getElementById('title').value.trim();
+    const category = document.getElementById('category').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const button = document.getElementById('createAIGenBtn');
+
+    if (!title) {
+        updateAIStatus('createAIGenStatus', 'Enter a title first.', true);
+        return;
+    }
+
+    try {
+        button.disabled = true;
+        updateAIStatus('createAIGenStatus', 'Generating description...');
+
+        const description = await requestGeneratedDescription({ title, category, location });
+        document.getElementById('description').value = description;
+        updateAIStatus('createAIGenStatus', 'Description generated.');
+    } catch (error) {
+        console.error('Error generating description:', error);
+        updateAIStatus('createAIGenStatus', error.message, true);
+    } finally {
+        button.disabled = false;
+    }
+}
+
+async function generateEditDescription() {
+    const title = document.getElementById('editTitle').value.trim();
+    const category = document.getElementById('editCategory').value.trim();
+    const location = document.getElementById('editLocation').value.trim();
+    const button = document.getElementById('editAIGenBtn');
+
+    if (!title) {
+        updateAIStatus('editAIGenStatus', 'Enter a title first.', true);
+        return;
+    }
+
+    try {
+        button.disabled = true;
+        updateAIStatus('editAIGenStatus', 'Generating description...');
+
+        const description = await requestGeneratedDescription({ title, category, location });
+        document.getElementById('editDescription').value = description;
+        updateAIStatus('editAIGenStatus', 'Description generated.');
+    } catch (error) {
+        console.error('Error generating description:', error);
+        updateAIStatus('editAIGenStatus', error.message, true);
+    } finally {
+        button.disabled = false;
+    }
 }
 
 // Close modal when clicking outside

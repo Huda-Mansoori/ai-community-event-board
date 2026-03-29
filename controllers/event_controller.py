@@ -69,10 +69,31 @@ def get_events_by_category(category):
 @event_bp.route("/generate-description", methods=["POST"])
 def generate_description():
     """Generate an AI-powered event description via Gemini."""
-    pass
+    data = request.get_json(silent=True) or {}
+
+    title = (data.get("title") or "").strip()
+    category = (data.get("category") or "").strip()
+    location = (data.get("location") or "").strip()
+
+    if not title:
+        return jsonify({"error": "title is required"}), 400
+
+    try:
+        description = ai_service.generate_event_description(title, category, location)
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+    except RuntimeError as error:
+        return jsonify({"error": str(error)}), 502
+
+    return jsonify({"description": description})
 
 
 @event_bp.route("/recommend", methods=["POST"])
 def recommend_events():
     """Return AI-powered event recommendations based on user interests."""
-    pass
+    data = request.get_json(silent=True) or {}
+    interests = data.get("interests") or []
+    events = event_service.get_all_events()
+    recommendations = ai_service.recommend_events(interests, events)
+
+    return jsonify({"recommendations": recommendations})
