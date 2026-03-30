@@ -19,12 +19,12 @@ def client():
 
 #checking does the home page load
 def test_health_check_status_code(client):
-    response = client.get("/")
+    response = client.get("/health")
     assert response.status_code == 200
 
 # then Does it return "ok"
 def test_health_check_returns_ok(client):
-    response = client.get("/")
+    response = client.get("/health")
     data = response.get_json()
     assert data["status"] == "ok"
 
