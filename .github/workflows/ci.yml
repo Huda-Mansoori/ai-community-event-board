@@ -7,8 +7,34 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    name: Install, Lint & Test
+  install:
+    name: install
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest flake8
+
+      - name: Cache installed packages
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+  lint_and_test:
+    name: lint & test
+    needs: install
     runs-on: ubuntu-latest
 
     steps:
@@ -34,7 +60,7 @@ jobs:
 
   build:
     name: Build & Smoke Test Docker Image
-    needs: test
+    needs: lint_and_test
     runs-on: ubuntu-latest
 
     steps:
