@@ -29,6 +29,3 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ai-community-event-board:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/ai-community-event-board:${{ github.sha }}
-
-      - name: Trigger Railway redeploy
-        run: curl --fail --silent --show-error -X POST "${{ secrets.RAILWAY_DEPLOY_HOOK }}"
