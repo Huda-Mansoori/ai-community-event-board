@@ -29,3 +29,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ai-community-event-board:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/ai-community-event-board:${{ github.sha }}
+
+      - name: Trigger Render deploy
+        run: curl --fail --silent --show-error -X POST "${{ secrets.DEPLOY_HOOK }}"
