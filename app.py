@@ -16,6 +16,19 @@ def home():
 def health_check():
     return {"status": "ok", "message": "AI Community Event Board API is running"}
 
+@app.route("/health/db")
+def db_check():
+    import os
+    from pymongo import MongoClient
+    uri = os.environ.get("MONGO_URI", "NOT SET")
+    safe_uri = uri[:30] + "..." if len(uri) > 30 else uri
+    try:
+        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        client.admin.command("ping")
+        return {"status": "ok", "uri_prefix": safe_uri}
+    except Exception as e:
+        return {"status": "error", "uri_prefix": safe_uri, "error": str(e)}, 500
+
 
 if __name__ == "__main__":
     app.run(debug=app.config["DEBUG"])
