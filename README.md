@@ -19,6 +19,25 @@ CI/CD pipelines, and cloud deployment.
 
 **Live App:**  https://ai-community-event-board-n0e6.onrender.com
 
+##  Architecture Overview
+User Browser
+↓
+Flask Web App (Render.com)
+↓
+Controllers → Services → Models
+↓              ↓
+MongoDB Atlas    Gemini AI API
+
+### How it works:
+- User interacts with the **HTML/CSS/JS frontend**
+- Frontend sends requests to the **Flask backend**
+- Controllers handle the requests and call the **Services layer**
+- Services interact with **MongoDB Atlas** for data storage
+- AI features call the **Gemini API** to generate descriptions and recommendations
+- The entire app is **containerized with Docker** and deployed on **Render.com**
+- Every push to main triggers **GitHub Actions** to test and auto-deploy
+
+
 ---
 
 ## Team Members
